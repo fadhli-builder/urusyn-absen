@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ quiet: true });
 const { Pool, types } = require('pg');
 
 // kolom DATE dikembalikan sebagai teks 'YYYY-MM-DD', bukan objek Date (hindari geser zona waktu)

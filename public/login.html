@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login - Urusyn Absen</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="split">
+  <div class="brand"><b>Urusyn Absen</b><p>Absensi guru yang rapi dan jujur.</p></div>
+  <div class="wrap">
+    <h2>Masuk admin sekolah</h2>
+    <p class="mu">Gunakan ID Sekolah dan password dari Urusyn.</p>
+    <form id="form" autocomplete="off">
+      <label for="sekolah">ID Sekolah</label>
+      <input id="sekolah" name="sekolah" required maxlength="60" autocapitalize="none" spellcheck="false">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required maxlength="200">
+      <button class="btn" id="tombol" type="submit">Masuk</button>
+      <div class="err" id="pesan" role="alert"></div>
+    </form>
+    <p class="mu"><a href="/">Kembali ke beranda</a></p>
+  </div>
+</div>
+<script src="/login.js"></script>
+</body>
+</html>

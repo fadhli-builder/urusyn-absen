@@ -6,10 +6,12 @@ const { requireAdmin, wajibSudahGantiPassword } = require('./middleware/auth');
 const gantiPasswordRoutes = require('./routes/gantiPassword');
 const pengaturanRoutes = require('./routes/pengaturan');
 const guruRoutes = require('./routes/guru');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
 
 app.get('/health', async (req, res) => {
   try {
