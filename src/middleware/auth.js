@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { query } = require('../db/query');
 
 function requireAdmin(req, res, next) {
   const token = req.cookies && req.cookies.token;
@@ -9,11 +10,26 @@ function requireAdmin(req, res, next) {
     if (data.peran !== 'admin' || !data.sekolahId) {
       return res.status(401).json({ error: 'Belum login' });
     }
-    req.sekolahId = data.sekolahId; // satu-satunya sumber sekolahId untuk endpoint admin
+    req.sekolahId = data.sekolahId;
     next();
   } catch (err) {
     res.status(401).json({ error: 'Belum login' });
   }
 }
 
-module.exports = { requireAdmin };
+async function wajibSudahGantiPassword(req, res, next) {
+  const hasil = await query(
+    "SELECT harus_ganti_password FROM akun_admin WHERE sekolah_id = $1 AND username = 'admin'",
+    [req.sekolahId]
+  );
+  const row = hasil.rows[0];
+  if (!row) return res.status(401).json({ error: 'Belum login' });
+  if (row.harus_ganti_password) {
+    return res
+      .status(403)
+      .json({ error: 'Ganti password dulu sebelum melanjutkan', harusGantiPassword: true });
+  }
+  next();
+}
+
+module.exports = { requireAdmin, wajibSudahGantiPassword };

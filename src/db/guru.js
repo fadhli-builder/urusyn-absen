@@ -16,4 +16,28 @@ async function ambilGuru(sekolahId, guruId) {
   return hasil.rows[0] || null;
 }
 
-module.exports = { daftarGuru, ambilGuru };
+async function tambahGuru(sekolahId, nama, pinHash) {
+  const hasil = await query(
+    'INSERT INTO guru (sekolah_id, nama, pin_hash) VALUES ($1, $2, $3) RETURNING id, nama, aktif',
+    [sekolahId, nama, pinHash]
+  );
+  return hasil.rows[0];
+}
+
+async function ubahAktifGuru(sekolahId, guruId, aktif) {
+  const hasil = await query(
+    'UPDATE guru SET aktif = $1 WHERE sekolah_id = $2 AND id = $3 RETURNING id, nama, aktif',
+    [aktif, sekolahId, guruId]
+  );
+  return hasil.rows[0] || null;
+}
+
+async function ubahPinGuru(sekolahId, guruId, pinHash) {
+  const hasil = await query(
+    'UPDATE guru SET pin_hash = $1 WHERE sekolah_id = $2 AND id = $3 RETURNING id',
+    [pinHash, sekolahId, guruId]
+  );
+  return hasil.rows[0] || null;
+}
+
+module.exports = { daftarGuru, ambilGuru, tambahGuru, ubahAktifGuru, ubahPinGuru };

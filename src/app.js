@@ -2,7 +2,10 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const pool = require('./db/pool');
 const authRoutes = require('./routes/auth');
-const { requireAdmin } = require('./middleware/auth');
+const { requireAdmin, wajibSudahGantiPassword } = require('./middleware/auth');
+const gantiPasswordRoutes = require('./routes/gantiPassword');
+const pengaturanRoutes = require('./routes/pengaturan');
+const guruRoutes = require('./routes/guru');
 
 const app = express();
 app.use(express.json());
@@ -22,5 +25,8 @@ app.get('/api/saya', requireAdmin, (req, res) => {
 });
 
 app.use('/api', authRoutes);
+app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
+app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
+app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
 
 module.exports = app;
