@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard - Urusyn Absen</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="shell">
+  <nav class="side">
+    <b>Urusyn Absen</b>
+    <div class="mu" id="namaSekolah">Memuat...</div>
+    <div id="menu">
+      <a href="#dashboard" data-tab="dashboard">Dashboard</a>
+      <a href="#guru" data-tab="guru">Guru</a>
+      <a href="#rekap" data-tab="rekap">Rekap</a>
+      <a href="#pengaturan" data-tab="pengaturan">Pengaturan</a>
+    </div>
+    <button class="keluar" id="keluar" type="button">Keluar</button>
+  </nav>
+  <main class="main">
+    <div class="banner" id="banner" hidden></div>
+
+    <section id="tab-ganti" hidden>
+      <h2>Ganti password dulu</h2>
+      <p class="mu">Ini login pertama. Buat password baru sebelum melanjutkan.</p>
+      <form id="formGanti" class="panel" autocomplete="off">
+        <label for="pLama">Password sementara</label>
+        <input id="pLama" type="password" required maxlength="200">
+        <label for="pBaru">Password baru (minimal 8 karakter)</label>
+        <input id="pBaru" type="password" required minlength="8" maxlength="72">
+        <label for="pUlang">Ulangi password baru</label>
+        <input id="pUlang" type="password" required minlength="8" maxlength="72">
+        <button class="btn" type="submit">Simpan password</button>
+        <div class="err" id="pesanGanti" role="alert"></div>
+      </form>
+    </section>
+
+    <section id="tab-dashboard" hidden>
+      <h2 id="sapaan">Dashboard</h2>
+      <p class="mu">Ringkasan kehadiran hari ini akan tampil di sini.</p>
+    </section>
+    <section id="tab-guru" hidden>
+      <h2>Guru</h2>
+      <p class="mu">Daftar dan pengelolaan guru akan tampil di sini.</p>
+    </section>
+    <section id="tab-rekap" hidden>
+      <h2>Rekap</h2>
+      <p class="mu">Rekap kehadiran dan unduh CSV akan tampil di sini.</p>
+    </section>
+    <section id="tab-pengaturan" hidden>
+      <h2>Pengaturan</h2>
+      <p class="mu">Lokasi, jam masuk, dan selfie akan diatur di sini.</p>
+    </section>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

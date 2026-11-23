@@ -29,3 +29,17 @@ label{display:block;margin:18px 0 6px;font-weight:600;font-size:15px}
 .brand b{font-family:var(--hd);font-size:22px}
 .brand p{font-family:var(--hd);font-size:42px;line-height:1.05;letter-spacing:-.03em;font-weight:700;max-width:400px;margin:0}
 @media(max-width:800px){.split{grid-template-columns:1fr}.brand{padding:24px;gap:24px}.brand p{font-size:26px}h1{font-size:32px}}
+[hidden]{display:none!important}
+.shell{display:flex;min-height:100vh}
+.side{width:220px;background:var(--ac);color:#e6efe9;padding:26px 14px;flex-shrink:0;display:flex;flex-direction:column}
+.side b{display:block;padding:0 10px 2px;font-family:var(--hd);font-size:20px;color:#fff}
+.side .mu{padding:0 10px 24px;color:#9fbfb2}
+.side a{display:block;padding:11px 12px;color:#cfe0d8;border-radius:10px;text-decoration:none;margin-bottom:2px}
+.side a:hover{background:#ffffff14}
+.side a.on{background:#ffffff22;color:#fff;font-weight:600}
+.keluar{margin-top:auto;background:transparent;border:1.5px solid #9fbfb2;color:#fff;border-radius:10px;padding:10px;cursor:pointer}
+.keluar:hover{background:#ffffff14}
+.main{flex:1;padding:36px 40px;min-width:0;max-width:960px}
+.banner{background:#fff4e0;border:1px solid #e8c88a;color:#7a4a00;border-radius:12px;padding:14px 16px;margin-bottom:20px}
+.panel{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:22px;max-width:480px}
+@media(max-width:800px){.shell{flex-direction:column}.side{width:100%;flex-direction:row;flex-wrap:wrap;gap:4px;padding:14px}.side .mu{padding:0 10px}.keluar{margin-top:0}.main{padding:22px 18px}}

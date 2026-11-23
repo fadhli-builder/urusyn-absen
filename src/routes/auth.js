@@ -62,4 +62,13 @@ router.post('/login', limiterLogin, async (req, res) => {
   res.json({ ok: true, harusGantiPassword: row.harus_ganti_password });
 });
 
+router.post('/logout', (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.json({ ok: true });
+});
+
 module.exports = router;
