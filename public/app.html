@@ -43,18 +43,69 @@
     </section>
     <section id="tab-guru" hidden>
       <h2>Guru</h2>
-      <p class="mu">Daftar dan pengelolaan guru akan tampil di sini.</p>
+      <form id="formGuru" class="baris" autocomplete="off">
+        <div class="isi">
+          <label for="namaGuru">Nama guru baru</label>
+          <input id="namaGuru" required minlength="2" maxlength="100">
+        </div>
+        <button class="btn" type="submit">Tambah guru</button>
+      </form>
+      <div class="err" id="pesanGuru" role="alert"></div>
+      <div class="tabel-scroll">
+        <table>
+          <thead><tr><th>Nama</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="tabelGuru"></tbody>
+        </table>
+      </div>
     </section>
+    <dialog id="modalPin">
+      <h3 id="judulPin">PIN guru</h3>
+      <div class="pin" id="isiPin"></div>
+      <p class="mu">PIN hanya tampil sekali. Catat dan berikan ke guru sekarang.</p>
+      <button class="btn" id="tutupPin" type="button">Saya sudah mencatat</button>
+    </dialog>
     <section id="tab-rekap" hidden>
       <h2>Rekap</h2>
       <p class="mu">Rekap kehadiran dan unduh CSV akan tampil di sini.</p>
     </section>
     <section id="tab-pengaturan" hidden>
       <h2>Pengaturan</h2>
-      <p class="mu">Lokasi, jam masuk, dan selfie akan diatur di sini.</p>
+      <form id="formPengaturan" class="panel" autocomplete="off">
+        <h3>Lokasi sekolah</h3>
+        <label for="lat">Latitude</label>
+        <input id="lat" type="number" step="any" min="-90" max="90">
+        <label for="lng">Longitude</label>
+        <input id="lng" type="number" step="any" min="-180" max="180">
+        <button class="btn o" id="pakaiLokasi" type="button">Pakai lokasi saya</button>
+        <p class="mu" id="infoLokasi">Paling akurat kalau dibuka dari HP saat berada di sekolah.</p>
+        <label for="radius">Radius absen (meter)</label>
+        <input id="radius" type="number" min="10" max="5000">
+        <label for="jamMasuk">Jam masuk</label>
+        <input id="jamMasuk" type="time">
+        <label for="toleransi">Toleransi telat (menit)</label>
+        <input id="toleransi" type="number" min="0" max="180">
+        <label for="akurasi">Akurasi GPS maksimal (meter)</label>
+        <input id="akurasi" type="number" min="5" max="1000">
+        <label><input id="selfie" type="checkbox">Wajibkan selfie saat absen</label>
+        <button class="btn" type="submit">Simpan pengaturan</button>
+        <div class="err" id="pesanPengaturan" role="alert"></div>
+      </form>
+      <form id="formGantiPw" class="panel" autocomplete="off">
+        <h3>Ganti password</h3>
+        <label for="pw2Lama">Password sekarang</label>
+        <input id="pw2Lama" type="password" required maxlength="200">
+        <label for="pw2Baru">Password baru (minimal 8 karakter)</label>
+        <input id="pw2Baru" type="password" required minlength="8" maxlength="72">
+        <label for="pw2Ulang">Ulangi password baru</label>
+        <input id="pw2Ulang" type="password" required minlength="8" maxlength="72">
+        <button class="btn" type="submit">Ganti password</button>
+        <div class="err" id="pesanGantiPw" role="alert"></div>
+      </form>
     </section>
   </main>
 </div>
 <script src="/app.js"></script>
+<script src="/guru.js"></script>
+<script src="/pengaturan.js"></script>
 </body>
 </html>
