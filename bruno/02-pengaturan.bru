@@ -1,0 +1,15 @@
+meta {
+  name: 02 pengaturan
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/pengaturan
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+}

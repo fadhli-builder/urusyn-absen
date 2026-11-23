@@ -1,0 +1,21 @@
+meta {
+  name: 04 nonaktifkan guru sekolah lain (harus 404)
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/guru/1
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "aktif": false
+  }
+}
+
+assert {
+  res.status: eq 404
+}

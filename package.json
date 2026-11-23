@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --runInBand",
     "migrate": "node src/db/migrate.js",
-    "dev": "node --watch src/server.js"
+    "dev": "node --watch src/server.js",
+    "migrate:test": "node scripts/migrate-test.js"
   },
   "repository": {
     "type": "git",
