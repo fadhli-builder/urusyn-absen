@@ -39,8 +39,23 @@
 
     <section id="tab-dashboard" hidden>
       <h2 id="sapaan">Dashboard</h2>
-      <p class="mu">Ringkasan kehadiran hari ini akan tampil di sini.</p>
+      <p class="mu" id="tanggalDash"></p>
+      <div class="kartu-grid" id="kartuRingkasan"></div>
+      <h3>Sudah absen</h3>
+      <div class="tabel-scroll">
+        <table>
+          <thead><tr><th>Nama</th><th>Status</th><th>Masuk</th><th>Pulang</th><th>Foto</th></tr></thead>
+          <tbody id="tabelHadir"></tbody>
+        </table>
+      </div>
+      <h3 class="jarak-atas">Belum absen</h3>
+      <p id="daftarBelum" class="mu"></p>
     </section>
+    <dialog id="modalFoto">
+      <h3 id="judulFoto">Selfie</h3>
+      <img id="imgFoto" alt="Selfie absen">
+      <button class="btn" id="tutupFoto" type="button">Tutup</button>
+    </dialog>
     <section id="tab-guru" hidden>
       <h2>Guru</h2>
       <form id="formGuru" class="baris" autocomplete="off">
@@ -66,7 +81,19 @@
     </dialog>
     <section id="tab-rekap" hidden>
       <h2>Rekap</h2>
-      <p class="mu">Rekap kehadiran dan unduh CSV akan tampil di sini.</p>
+      <div class="alat">
+        <div>
+          <label for="inputBulan">Bulan</label>
+          <input id="inputBulan" type="month">
+        </div>
+        <button class="btn" id="btnTampil" type="button">Tampilkan</button>
+        <button class="btn o" id="btnCsv" type="button">Unduh CSV</button>
+      </div>
+      <div class="err" id="pesanRekap" role="alert"></div>
+      <p class="mu">H = hadir, T = telat, kosong = belum absen atau tidak ada data.</p>
+      <div class="tabel-scroll">
+        <table class="matriks"><thead id="headRekap"></thead><tbody id="bodyRekap"></tbody></table>
+      </div>
     </section>
     <section id="tab-pengaturan" hidden>
       <h2>Pengaturan</h2>
@@ -107,5 +134,7 @@
 <script src="/app.js"></script>
 <script src="/guru.js"></script>
 <script src="/pengaturan.js"></script>
+<script src="/dashboard.js"></script>
+<script src="/rekap.js"></script>
 </body>
 </html>
