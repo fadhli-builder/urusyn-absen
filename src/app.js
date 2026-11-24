@@ -11,6 +11,7 @@ const pengaturanRoutes = require('./routes/pengaturan');
 const guruRoutes = require('./routes/guru');
 const guruAuthRoutes = require('./routes/guruAuth');
 const persetujuanRoutes = require('./routes/persetujuan');
+const absenRoutes = require('./routes/absen');
 const { wajibPersetujuan } = require('./middleware/persetujuan');
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api', guruAuthRoutes);
 app.use('/api/persetujuan', requireGuru, persetujuanRoutes);
 // sementara: bukti absen ditolak sebelum persetujuan. Diganti endpoint absen di Hari 11.
 app.get('/api/absen/siap', requireGuru, wajibPersetujuan, (req, res) => res.json({ ok: true }));
+app.use('/api/absen', requireGuru, wajibPersetujuan, absenRoutes);
 app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
 app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
 app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
