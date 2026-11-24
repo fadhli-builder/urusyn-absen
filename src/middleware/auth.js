@@ -17,6 +17,23 @@ function requireAdmin(req, res, next) {
   }
 }
 
+function requireGuru(req, res, next) {
+  const token = req.cookies && req.cookies.token_guru;
+  if (!token) return res.status(401).json({ error: 'Belum login' });
+
+  try {
+    const data = jwt.verify(token, process.env.JWT_SECRET, { algorithms: ['HS256'] });
+    if (data.peran !== 'guru' || !data.sekolahId || !data.guruId) {
+      return res.status(401).json({ error: 'Belum login' });
+    }
+    req.sekolahId = data.sekolahId;
+    req.guruId = data.guruId;
+    next();
+  } catch (err) {
+    res.status(401).json({ error: 'Belum login' });
+  }
+}
+
 async function wajibSudahGantiPassword(req, res, next) {
   const hasil = await query(
     "SELECT harus_ganti_password FROM akun_admin WHERE sekolah_id = $1 AND username = 'admin'",
@@ -32,4 +49,4 @@ async function wajibSudahGantiPassword(req, res, next) {
   next();
 }
 
-module.exports = { requireAdmin, wajibSudahGantiPassword };
+module.exports = { requireAdmin, requireGuru, wajibSudahGantiPassword };

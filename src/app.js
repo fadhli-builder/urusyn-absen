@@ -1,18 +1,23 @@
+const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const pool = require('./db/pool');
+const { ambilPengaturan } = require('./db/sekolah');
+const { ambilGuru } = require('./db/guru');
+const { requireAdmin, requireGuru, wajibSudahGantiPassword } = require('./middleware/auth');
 const authRoutes = require('./routes/auth');
-const { requireAdmin, wajibSudahGantiPassword } = require('./middleware/auth');
 const gantiPasswordRoutes = require('./routes/gantiPassword');
 const pengaturanRoutes = require('./routes/pengaturan');
 const guruRoutes = require('./routes/guru');
-const path = require('path');
-const { ambilPengaturan } = require('./db/sekolah');
+const guruAuthRoutes = require('./routes/guruAuth');
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, '..', 'public'), { extensions: ['html'] }));
+
+const publik = path.join(__dirname, '..', 'public');
+app.use(express.static(publik, { extensions: ['html'] }));
+app.get('/s/:slug', (req, res) => res.sendFile(path.join(publik, 's.html')));
 
 app.get('/health', async (req, res) => {
   try {
@@ -22,6 +27,12 @@ app.get('/health', async (req, res) => {
     res.status(500).json({ ok: false, db: false });
   }
 });
+
+app.use('/api', authRoutes);
+app.use('/api', guruAuthRoutes);
+app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
+app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
+app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
 
 app.get('/api/saya', requireAdmin, async (req, res) => {
   const s = await ambilPengaturan(req.sekolahId);
@@ -38,9 +49,10 @@ app.get('/api/saya', requireAdmin, async (req, res) => {
   });
 });
 
-app.use('/api', authRoutes);
-app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
-app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
-app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
+app.get('/api/profil-guru', requireGuru, async (req, res) => {
+  const g = await ambilGuru(req.sekolahId, req.guruId);
+  if (!g || !g.aktif) return res.status(401).json({ error: 'Belum login' });
+  res.json({ id: g.id, nama: g.nama });
+});
 
 module.exports = app;

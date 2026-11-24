@@ -14,4 +14,5 @@ function buatLimiter() {
 module.exports = {
   limiterLogin: buatLimiter(),
   limiterGantiPassword: buatLimiter(),
+  limiterLoginGuru: buatLimiter(),
 };

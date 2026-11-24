@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Absen Guru - Urusyn Absen</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+  <p class="mu">Urusyn Absen</p>
+  <h2 id="judul">Memuat...</h2>
+  <p class="mu" id="info"></p>
+  <form id="form" autocomplete="off" hidden>
+    <label for="guru">Nama Anda</label>
+    <select id="guru" required><option value="">Pilih nama...</option></select>
+    <label for="pin">PIN (6 digit)</label>
+    <input id="pin" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" type="password" required>
+    <button class="btn" id="tombol" type="submit">Masuk</button>
+    <div class="err" id="pesan" role="alert"></div>
+  </form>
+</div>
+<script src="/s.js"></script>
+</body>
+</html>
