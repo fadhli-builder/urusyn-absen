@@ -14,6 +14,7 @@ const persetujuanRoutes = require('./routes/persetujuan');
 const absenRoutes = require('./routes/absen');
 const pulangRoutes = require('./routes/pulang');
 const hariIniRoutes = require('./routes/hariIni');
+const rekapRoutes = require('./routes/rekap');
 const fotoRoutes = require('./routes/foto');
 const { wajibPersetujuan } = require('./middleware/persetujuan');
 
@@ -46,6 +47,7 @@ app.use('/api/foto', requireAdmin, wajibSudahGantiPassword, fotoRoutes);
 app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
 app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
 app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
+app.use('/api/rekap', requireAdmin, wajibSudahGantiPassword, rekapRoutes);
 
 app.get('/api/saya', requireAdmin, async (req, res) => {
   const s = await ambilPengaturan(req.sekolahId);
