@@ -1,8 +1,38 @@
 const slug = location.pathname.split('/')[2] || '';
 const $ = (id) => document.getElementById(id);
+let versiTeks = '';
 
 function tampil(teks) {
   $('pesan').textContent = teks; // textContent, aman dari XSS
+}
+
+function layarSiap() {
+  $('form').hidden = true;
+  $('setuju').hidden = true;
+  $('info').textContent = 'Persetujuan tercatat. Tombol absen akan muncul di sini.';
+}
+
+async function cekPersetujuan() {
+  const res = await fetch('/api/persetujuan');
+  if (!res.ok) {
+    $('info').textContent = 'Terjadi masalah. Muat ulang halaman ini.';
+    return;
+  }
+  const data = await res.json();
+  if (data.sudah) {
+    layarSiap();
+    return;
+  }
+  versiTeks = data.versi;
+  $('judulSetuju').textContent = data.teks.judul;
+  $('poinSetuju').replaceChildren(
+    ...data.teks.poin.map((p) => {
+      const li = document.createElement('li');
+      li.textContent = p;
+      return li;
+    })
+  );
+  $('setuju').hidden = false;
 }
 
 async function muat() {
@@ -52,7 +82,8 @@ $('form').addEventListener('submit', async (e) => {
       const nama = $('guru').options[$('guru').selectedIndex].textContent;
       $('form').hidden = true;
       $('judul').textContent = 'Halo, ' + nama;
-      $('info').textContent = 'Berhasil masuk. Tombol absen akan muncul di sini.';
+      $('info').textContent = '';
+      await cekPersetujuan();
       return;
     }
     if (res.status === 401) tampil('Nama atau PIN salah. Periksa lagi ya.');
@@ -63,6 +94,31 @@ $('form').addEventListener('submit', async (e) => {
     tampil('Tidak bisa terhubung. Periksa koneksi internet Anda.');
   }
   $('tombol').disabled = false;
+});
+
+$('cek').addEventListener('change', () => {
+  $('tombolSetuju').disabled = !$('cek').checked;
+});
+
+$('tombolSetuju').addEventListener('click', async () => {
+  $('pesanSetuju').textContent = '';
+  $('tombolSetuju').disabled = true;
+  try {
+    const res = await fetch('/api/persetujuan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ setuju: true, versi: versiTeks }),
+    });
+    if (res.ok) {
+      layarSiap();
+      return;
+    }
+    const data = await res.json().catch(() => ({}));
+    $('pesanSetuju').textContent = data.error || 'Gagal menyimpan persetujuan.';
+  } catch (err) {
+    $('pesanSetuju').textContent = 'Tidak bisa terhubung. Periksa koneksi internet Anda.';
+  }
+  $('tombolSetuju').disabled = !$('cek').checked;
 });
 
 muat();
