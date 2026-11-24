@@ -34,7 +34,7 @@ describe('absen masuk', () => {
     const idB = await buatSekolah('sekolah-b', 'Sekolah B', 'passB-12345');
     await query(
       `UPDATE sekolah SET lat = -6.2, lng = 106.8, radius_m = 100, jam_masuk = '07:00',
-       toleransi_menit = 10, akurasi_maks_m = 50 WHERE id = $1`,
+       toleransi_menit = 10, akurasi_maks_m = 50, selfie_aktif = false WHERE id = $1`,
       [idA]
     );
     a1 = await tambahGuru(idA, 'Guru A1');
