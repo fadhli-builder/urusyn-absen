@@ -11,6 +11,7 @@
   <p class="mu">Urusyn Absen</p>
   <h2 id="judul">Memuat...</h2>
   <p class="mu" id="info"></p>
+
   <form id="form" autocomplete="off" hidden>
     <label for="guru">Nama Anda</label>
     <select id="guru" required><option value="">Pilih nama...</option></select>
@@ -19,12 +20,25 @@
     <button class="btn" id="tombol" type="submit">Masuk</button>
     <div class="err" id="pesan" role="alert"></div>
   </form>
+
   <section id="setuju" hidden>
     <h3 id="judulSetuju"></h3>
     <ul class="poin" id="poinSetuju"></ul>
     <label class="cek"><input id="cek" type="checkbox">Saya telah membaca dan menyetujui.</label>
     <button class="btn" id="tombolSetuju" type="button" disabled>Setuju dan lanjut</button>
     <div class="err" id="pesanSetuju" role="alert"></div>
+  </section>
+
+  <section id="absen" hidden>
+    <p class="mu" id="tanggalAbsen"></p>
+    <div class="panel">
+      <div class="baris-status"><span class="mu">Masuk</span><b id="statusMasuk">-</b></div>
+      <div class="baris-status"><span class="mu">Pulang</span><b id="statusPulang">-</b></div>
+    </div>
+    <p class="mu" id="infoSelfie" hidden>Sekolah ini mewajibkan selfie. Fitur foto menyusul di sesi berikutnya.</p>
+    <button class="btn" id="btnMasuk" type="button">Absen masuk</button>
+    <button class="btn o" id="btnPulang" type="button">Absen pulang</button>
+    <div class="err" id="pesanAbsen" role="alert"></div>
   </section>
 </div>
 <script src="/s.js"></script>

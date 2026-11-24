@@ -64,3 +64,5 @@ select:focus{outline:2px solid var(--ac);outline-offset:1px;border-color:var(--a
 ul.poin{padding-left:20px;margin:12px 0}
 ul.poin li{margin-bottom:8px;color:var(--tx);font-size:16px}
 label.cek{display:flex;align-items:flex-start;gap:4px;margin:18px 0 0}
+.baris-status{display:flex;justify-content:space-between;padding:8px 0}
+.btn+.btn{margin-top:12px}

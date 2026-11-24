@@ -13,6 +13,7 @@ const guruAuthRoutes = require('./routes/guruAuth');
 const persetujuanRoutes = require('./routes/persetujuan');
 const absenRoutes = require('./routes/absen');
 const pulangRoutes = require('./routes/pulang');
+const hariIniRoutes = require('./routes/hariIni');
 const fotoRoutes = require('./routes/foto');
 const { wajibPersetujuan } = require('./middleware/persetujuan');
 
@@ -40,6 +41,7 @@ app.use('/api/persetujuan', requireGuru, persetujuanRoutes);
 app.get('/api/absen/siap', requireGuru, wajibPersetujuan, (req, res) => res.json({ ok: true }));
 app.use('/api/absen', requireGuru, wajibPersetujuan, absenRoutes);
 app.use('/api/absen', requireGuru, wajibPersetujuan, pulangRoutes);
+app.use('/api/absen', requireGuru, wajibPersetujuan, hariIniRoutes);
 app.use('/api/foto', requireAdmin, wajibSudahGantiPassword, fotoRoutes);
 app.use('/api/ganti-password', requireAdmin, gantiPasswordRoutes);
 app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRoutes);
@@ -63,7 +65,8 @@ app.get('/api/saya', requireAdmin, async (req, res) => {
 app.get('/api/profil-guru', requireGuru, async (req, res) => {
   const g = await ambilGuru(req.sekolahId, req.guruId);
   if (!g || !g.aktif) return res.status(401).json({ error: 'Belum login' });
-  res.json({ id: g.id, nama: g.nama });
+  const s = await ambilPengaturan(req.sekolahId);
+  res.json({ id: g.id, nama: g.nama, slug: s ? s.slug : null });
 });
 
 module.exports = app;
