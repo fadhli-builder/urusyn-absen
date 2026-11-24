@@ -3,6 +3,8 @@ const $ = (id) => document.getElementById(id);
 let versiTeks = '';
 let namaSekolah = '';
 let sibuk = false;
+let selfieWajib = false;
+let fotoBlob = null;
 
 const fmtJam = (iso) =>
   new Date(iso).toLocaleTimeString('en-GB', {
@@ -28,6 +30,12 @@ function tampil(teks) {
 function pesanAbsen(teks, sukses) {
   $('pesanAbsen').textContent = teks;
   $('pesanAbsen').className = sukses ? 'err ok' : 'err';
+}
+
+function resetFoto() {
+  fotoBlob = null;
+  $('pratinjau').hidden = true;
+  $('infoFoto').textContent = '';
 }
 
 function tampilkanLogin(teks) {
@@ -60,6 +68,27 @@ function pesanLokasi(e) {
   return 'Browser ini tidak mendukung lokasi.';
 }
 
+// perkecil di HP: sisi terpanjang maksimal 800 px, JPEG kualitas 0,7
+async function perkecil(file) {
+  let bmp;
+  try {
+    bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+  } catch (e) {
+    bmp = await createImageBitmap(file); // browser lama
+  }
+  const skala = Math.min(1, 800 / Math.max(bmp.width, bmp.height));
+  const w = Math.max(1, Math.round(bmp.width * skala));
+  const h = Math.max(1, Math.round(bmp.height * skala));
+  const kanvas = $('pratinjau');
+  kanvas.width = w;
+  kanvas.height = h;
+  kanvas.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  if (bmp.close) bmp.close();
+  const blob = await new Promise((ok) => kanvas.toBlob(ok, 'image/jpeg', 0.7));
+  if (!blob) throw new Error('gagal');
+  return blob;
+}
+
 async function tampilAbsen() {
   $('setuju').hidden = true;
   const res = await fetch('/api/absen/hari-ini');
@@ -78,13 +107,23 @@ async function tampilAbsen() {
     ? fmtJam(d.masuk.jam) + ' WIB (' + (d.masuk.status === 'telat' ? 'Telat' : 'Hadir') + ')'
     : 'Belum absen';
   $('statusPulang').textContent = d.pulang ? fmtJam(d.pulang.jam) + ' WIB' : 'Belum absen';
-  $('infoSelfie').hidden = !d.selfieAktif;
-  $('btnMasuk').disabled = Boolean(d.masuk) || d.selfieAktif;
+
+  selfieWajib = d.selfieAktif;
+  const perluFoto = d.selfieAktif && !d.masuk;
+  $('blokSelfie').hidden = !perluFoto;
+  $('infoSelfie').hidden = !perluFoto;
+  if (!perluFoto) resetFoto();
+
+  $('btnMasuk').disabled = Boolean(d.masuk) || (d.selfieAktif && !fotoBlob);
   $('btnPulang').disabled = !d.masuk || Boolean(d.pulang);
 }
 
 async function kirimAbsen(jenis) {
   if (sibuk) return;
+  if (jenis === 'masuk' && selfieWajib && !fotoBlob) {
+    pesanAbsen('Ambil selfie dulu sebelum absen masuk.', false);
+    return;
+  }
   sibuk = true;
   pesanAbsen('', false);
   const tombol = jenis === 'masuk' ? $('btnMasuk') : $('btnPulang');
@@ -94,16 +133,24 @@ async function kirimAbsen(jenis) {
 
   try {
     let body = null;
+    let headers = {};
     if (jenis === 'masuk') {
       tombol.textContent = 'Mencari lokasi...';
-      body = JSON.stringify(await ambilLokasi());
+      const lok = await ambilLokasi();
+      if (selfieWajib) {
+        const f = new FormData();
+        f.append('lat', lok.lat);
+        f.append('lng', lok.lng);
+        f.append('akurasi', lok.akurasi);
+        f.append('foto', fotoBlob, 'selfie.jpg');
+        body = f; // Content-Type diatur browser (multipart)
+      } else {
+        body = JSON.stringify(lok);
+        headers = { 'Content-Type': 'application/json' };
+      }
     }
     tombol.textContent = 'Mengirim...';
-    const res = await fetch('/api/absen/' + jenis, {
-      method: 'POST',
-      headers: body ? { 'Content-Type': 'application/json' } : {},
-      body,
-    });
+    const res = await fetch('/api/absen/' + jenis, { method: 'POST', headers, body });
     const data = await res.json().catch(() => ({}));
 
     if (res.status === 401) {
@@ -111,6 +158,7 @@ async function kirimAbsen(jenis) {
       return;
     }
     if (res.ok) {
+      resetFoto();
       pesanAbsen(
         jenis === 'masuk'
           ? 'Absen masuk berhasil. Status: ' + (data.status === 'telat' ? 'Telat' : 'Hadir') +
@@ -119,6 +167,7 @@ async function kirimAbsen(jenis) {
         true
       );
     } else {
+      if ([409, 413, 415].includes(res.status)) resetFoto(); // foto bermasalah: wajib ambil ulang
       pesanAbsen(data.error || 'Gagal. Coba lagi.', false);
     }
   } catch (e) {
@@ -129,7 +178,7 @@ async function kirimAbsen(jenis) {
   } finally {
     tombol.textContent = label;
     sibuk = false;
-    await tampilAbsen(); // segarkan status dan keadaan tombol
+    await tampilAbsen();
   }
 }
 
@@ -255,6 +304,23 @@ $('tombolSetuju').addEventListener('click', async () => {
     $('pesanSetuju').textContent = 'Tidak bisa terhubung. Periksa koneksi internet Anda.';
   }
   $('tombolSetuju').disabled = !$('cek').checked;
+});
+
+$('inputSelfie').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = ''; // supaya memilih foto yang sama lagi tetap memicu event
+  if (!file) return;
+  $('infoFoto').textContent = 'Memproses foto...';
+  try {
+    fotoBlob = await perkecil(file);
+    $('pratinjau').hidden = false;
+    $('infoFoto').textContent =
+      'Foto siap (' + Math.round(fotoBlob.size / 1024) + ' KB). Ketuk "Ambil selfie" lagi kalau ingin mengulang.';
+  } catch (err) {
+    resetFoto();
+    $('infoFoto').textContent = 'File yang dipilih bukan foto. Coba lagi.';
+  }
+  $('btnMasuk').disabled = !fotoBlob;
 });
 
 $('btnMasuk').addEventListener('click', () => kirimAbsen('masuk'));

@@ -35,7 +35,13 @@
       <div class="baris-status"><span class="mu">Masuk</span><b id="statusMasuk">-</b></div>
       <div class="baris-status"><span class="mu">Pulang</span><b id="statusPulang">-</b></div>
     </div>
-    <p class="mu" id="infoSelfie" hidden>Sekolah ini mewajibkan selfie. Fitur foto menyusul di sesi berikutnya.</p>
+    <p class="mu" id="infoSelfie" hidden>Sekolah ini mewajibkan selfie. Ambil foto dulu sebelum absen masuk.</p>
+    <div id="blokSelfie" hidden>
+      <label class="btn o" for="inputSelfie">Ambil selfie</label>
+      <input id="inputSelfie" type="file" accept="image/*" capture="user" hidden>
+      <canvas id="pratinjau" hidden></canvas>
+      <p class="mu" id="infoFoto"></p>
+    </div>
     <button class="btn" id="btnMasuk" type="button">Absen masuk</button>
     <button class="btn o" id="btnPulang" type="button">Absen pulang</button>
     <div class="err" id="pesanAbsen" role="alert"></div>
