@@ -15,4 +15,15 @@ module.exports = {
   limiterLogin: buatLimiter(),
   limiterGantiPassword: buatLimiter(),
   limiterLoginGuru: buatLimiter(),
+
+  // absen: dihitung per GURU (bukan per IP), hanya permintaan POST. Mencegah spam upload.
+  limiterAbsen: rateLimit({
+    windowMs: 10 * 60 * 1000,
+    limit: 20,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    keyGenerator: (req) => 'guru:' + req.guruId,
+    skip: (req) => req.method !== 'POST',
+    message: { error: 'Terlalu banyak percobaan absen. Coba lagi beberapa menit lagi.' },
+  }),
 };

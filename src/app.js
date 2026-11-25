@@ -1,10 +1,12 @@
 const path = require('path');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
 const pool = require('./db/pool');
 const { ambilPengaturan } = require('./db/sekolah');
 const { ambilGuru } = require('./db/guru');
 const { requireAdmin, requireGuru, wajibSudahGantiPassword } = require('./middleware/auth');
+const { limiterAbsen } = require('./middleware/rateLimit');
 const authRoutes = require('./routes/auth');
 const gantiPasswordRoutes = require('./routes/gantiPassword');
 const pengaturanRoutes = require('./routes/pengaturan');
@@ -20,6 +22,40 @@ const fotoRoutes = require('./routes/foto');
 const { wajibPersetujuan } = require('./middleware/persetujuan');
 
 const app = express();
+
+const produksi = process.env.NODE_ENV === 'production';
+
+// di belakang reverse proxy (Hari 17) set TRUST_PROXY=1 supaya rate limit membaca IP klien asli
+app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: false,
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'blob:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        frameAncestors: ["'none'"],
+        ...(produksi ? { upgradeInsecureRequests: [] } : {}),
+      },
+    },
+    strictTransportSecurity: produksi ? { maxAge: 15552000, includeSubDomains: false } : false,
+    referrerPolicy: { policy: 'same-origin' },
+  })
+);
+
+app.use((req, res, next) => {
+  res.set('Permissions-Policy', 'geolocation=(self), camera=(self), microphone=(), payment=()');
+  next();
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -41,6 +77,7 @@ app.use('/api', guruAuthRoutes);
 app.use('/api/persetujuan', requireGuru, persetujuanRoutes);
 // sementara: bukti absen ditolak sebelum persetujuan. Diganti endpoint absen di Hari 11.
 app.get('/api/absen/siap', requireGuru, wajibPersetujuan, (req, res) => res.json({ ok: true }));
+app.use('/api/absen', requireGuru, limiterAbsen); // batasi kiriman absen per guru
 app.use('/api/absen', requireGuru, wajibPersetujuan, absenRoutes);
 app.use('/api/absen', requireGuru, wajibPersetujuan, pulangRoutes);
 app.use('/api/absen', requireGuru, wajibPersetujuan, hariIniRoutes);
@@ -71,6 +108,24 @@ app.get('/api/profil-guru', requireGuru, async (req, res) => {
   if (!g || !g.aktif) return res.status(401).json({ error: 'Belum login' });
   const s = await ambilPengaturan(req.sekolahId);
   res.json({ id: g.id, nama: g.nama, slug: s ? s.slug : null });
+});
+
+// 404 untuk API dan halaman lain
+app.use('/api', (req, res) => res.status(404).json({ error: 'Endpoint tidak ditemukan' }));
+app.use((req, res) => res.status(404).type('text/plain').send('Halaman tidak ditemukan'));
+
+// error handler global: detail hanya ke log server, tidak pernah ke klien
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+  const status = err && (err.status || err.statusCode);
+  if (err && err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Format data tidak valid' });
+  }
+  if (err && (err.type === 'entity.too.large' || status === 413)) {
+    return res.status(413).json({ error: 'Data terlalu besar' });
+  }
+  console.error('[error]', req.method, req.path, err && err.stack ? err.stack : err);
+  res.status(500).json({ error: 'Terjadi kesalahan di server' });
 });
 
 module.exports = app;
