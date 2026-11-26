@@ -4,13 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard - Urusyn Absen</title>
+<meta name="theme-color" content="#17493a">
 <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 <div class="shell">
-  <nav class="side">
-    <b>Urusyn Absen</b>
-    <div class="mu" id="namaSekolah">Memuat...</div>
+  <nav class="side" aria-label="Menu utama">
+    <div class="side-atas">
+      <div class="merek">
+        <b>Urusyn Absen</b>
+        <div class="mu" id="namaSekolah">Memuat...</div>
+      </div>
+      <button class="burger" id="burger" type="button" aria-label="Buka menu" aria-expanded="false" aria-controls="panelMenu"><span></span><span></span><span></span></button>
+    </div>
+    <div class="panel-menu" id="panelMenu">
     <div id="menu">
       <a href="#dashboard" data-tab="dashboard">Beranda</a>
       <a href="#guru" data-tab="guru">Guru</a>
@@ -19,7 +26,9 @@
       <a href="#pengaturan" data-tab="pengaturan">Pengaturan</a>
     </div>
     <button class="keluar" id="keluar" type="button">Keluar</button>
+    </div>
   </nav>
+  <div class="tirai" id="tirai" hidden></div>
   <main class="main">
     <div class="banner" id="banner" hidden></div>
 
@@ -170,6 +179,7 @@
   </main>
 </div>
 <script src="/app.js"></script>
+<script src="/menu.js"></script>
 <script src="/guru.js"></script>
 <script src="/pengaturan.js"></script>
 <script src="/dashboard.js"></script>
