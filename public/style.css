@@ -84,3 +84,9 @@ label.cek{display:flex;align-items:flex-start;gap:4px;margin:18px 0 0}
 .alat label{margin:0 0 4px}
 .alat .btn{margin:0;width:auto}
 .jarak-atas{margin-top:24px}
+
+.label{margin:22px 0 4px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--mu)}
+.kartu-link{background:#fff;border:1px solid var(--bd);border-radius:16px;padding:20px;margin-top:12px;max-width:640px}
+.kotak-link{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;background:var(--bg);border-radius:10px;padding:12px 14px;margin:10px 0 14px;word-break:break-all}
+.baris-tombol{display:flex;gap:8px;flex-wrap:wrap}
+.baris-tombol .btn.kecil+.btn.kecil{margin-left:0}

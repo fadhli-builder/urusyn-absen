@@ -43,7 +43,20 @@ async function mulai() {
     return;
   }
 
-  $('sapaan').textContent = 'Halo, ' + s.nama;
+  const link = location.origin + '/s/' + s.slug;
+  $('linkGuru').textContent = link;
+  $('bukaLink').href = link;
+  $('salinLink').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(link);
+      $('salinLink').textContent = 'Tersalin';
+    } catch {
+      $('salinLink').textContent = 'Gagal, salin manual';
+    }
+    setTimeout(() => {
+      $('salinLink').textContent = 'Salin link';
+    }, 2000);
+  });
   pasangBanner(s.berlaku_sampai);
   window.addEventListener('hashchange', tampilTab);
   tampilTab();

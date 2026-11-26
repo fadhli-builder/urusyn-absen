@@ -12,7 +12,7 @@
     <b>Urusyn Absen</b>
     <div class="mu" id="namaSekolah">Memuat...</div>
     <div id="menu">
-      <a href="#dashboard" data-tab="dashboard">Dashboard</a>
+      <a href="#dashboard" data-tab="dashboard">Beranda</a>
       <a href="#guru" data-tab="guru">Guru</a>
       <a href="#rekap" data-tab="rekap">Rekap</a>
       <a href="#pengaturan" data-tab="pengaturan">Pengaturan</a>
@@ -38,7 +38,18 @@
     </section>
 
     <section id="tab-dashboard" hidden>
-      <h2 id="sapaan">Dashboard</h2>
+      <h2>Beranda</h2>
+      <p class="label">Link absen</p>
+      <p class="mu">Kirim link ini lewat WhatsApp. Guru cukup membuka link, tanpa daftar akun.</p>
+      <div class="kartu-link">
+        <h3>Untuk Guru</h3>
+        <div class="kotak-link" id="linkGuru">Memuat...</div>
+        <div class="baris-tombol">
+          <button class="btn kecil" id="salinLink" type="button">Salin link</button>
+          <a class="btn kecil o" id="bukaLink" href="#" target="_blank" rel="noopener">Buka</a>
+        </div>
+      </div>
+      <p class="label">Hari ini</p>
       <p class="mu" id="tanggalDash"></p>
       <div class="kartu-grid" id="kartuRingkasan"></div>
       <h3>Sudah absen</h3>
