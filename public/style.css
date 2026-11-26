@@ -90,3 +90,11 @@ label.cek{display:flex;align-items:flex-start;gap:4px;margin:18px 0 0}
 .kotak-link{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:15px;background:var(--bg);border-radius:10px;padding:12px 14px;margin:10px 0 14px;word-break:break-all}
 .baris-tombol{display:flex;gap:8px;flex-wrap:wrap}
 .baris-tombol .btn.kecil+.btn.kecil{margin-left:0}
+
+.total-gaji{max-width:420px;margin-bottom:18px}
+.total-gaji b{font-size:34px}
+.tabel-gaji th,.tabel-gaji td{white-space:nowrap}
+.tabel-gaji .kanan,.kanan{text-align:right}
+.in-gaji{width:120px;padding:9px 10px}
+.tabel-gaji input[data-f="ppp"]{width:80px}
+.tabel-gaji tfoot td{border-bottom:0;font-weight:700}

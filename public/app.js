@@ -1,4 +1,4 @@
-const TAB = ['dashboard', 'guru', 'rekap', 'pengaturan'];
+const TAB = ['dashboard', 'guru', 'rekap', 'gaji', 'pengaturan'];
 const $ = (id) => document.getElementById(id);
 
 // escape sebelum teks dari server masuk ke innerHTML (cegah XSS)

@@ -18,6 +18,7 @@ const pulangRoutes = require('./routes/pulang');
 const hariIniRoutes = require('./routes/hariIni');
 const rekapRoutes = require('./routes/rekap');
 const rekapCsvRoutes = require('./routes/rekapCsv');
+const gajiRoutes = require('./routes/gaji');
 const fotoRoutes = require('./routes/foto');
 const { wajibPersetujuan } = require('./middleware/persetujuan');
 
@@ -87,6 +88,7 @@ app.use('/api/pengaturan', requireAdmin, wajibSudahGantiPassword, pengaturanRout
 app.use('/api/guru', requireAdmin, wajibSudahGantiPassword, guruRoutes);
 app.use('/api/rekap', requireAdmin, wajibSudahGantiPassword, rekapRoutes);
 app.use('/api/rekap', requireAdmin, wajibSudahGantiPassword, rekapCsvRoutes);
+app.use('/api/gaji', requireAdmin, wajibSudahGantiPassword, gajiRoutes);
 
 app.get('/api/saya', requireAdmin, async (req, res) => {
   const s = await ambilPengaturan(req.sekolahId);
