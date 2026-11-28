@@ -39,7 +39,7 @@ describe('isolasi guru antar sekolah', () => {
   test('admin A tidak bisa mereset PIN guru sekolah B', async () => {
     const sebelum = await query('SELECT pin_hash FROM guru WHERE id = $1', [guruB]);
 
-    const res = await agentA.post(`/api/guru/${guruB}/reset-pin`);
+    const res = await agentA.put(`/api/guru/${guruB}/pin`).send({ pin: '482916' });
     expect(res.status).toBe(404);
 
     const sesudah = await query('SELECT pin_hash FROM guru WHERE id = $1', [guruB]);

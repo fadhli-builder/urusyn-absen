@@ -44,6 +44,7 @@ function tampilkanLogin(teks) {
   $('form').hidden = false;
   $('tombol').disabled = false;
   $('judul').textContent = namaSekolah;
+  $('info').textContent = '';
   if (teks) tampil(teks);
 }
 
@@ -338,5 +339,35 @@ $('inputSelfie').addEventListener('change', async (e) => {
 
 $('btnMasuk').addEventListener('click', () => kirimAbsen('masuk'));
 $('btnPulang').addEventListener('click', () => kirimAbsen('pulang'));
+
+// kembali ke layar pilih guru dan PIN: sesi di server dihapus supaya perangkat bisa dipakai guru lain
+async function keluar() {
+  if (sibuk) return;
+  const pesan = $('setuju').hidden ? $('pesanAbsen') : $('pesanSetuju');
+  let res = null;
+  try {
+    res = await fetch('/api/s/' + encodeURIComponent(slug) + '/logout', { method: 'POST' });
+  } catch (e) {
+    res = null;
+  }
+  if (!res || !res.ok) {
+    pesan.textContent = 'Tidak bisa keluar. Periksa koneksi internet Anda.';
+    pesan.className = 'err';
+    return;
+  }
+  resetFoto();
+  keadaan = { masuk: false, pulang: false };
+  selfieWajib = false;
+  pesanAbsen('', false);
+  $('pesanSetuju').textContent = '';
+  $('cek').checked = false;
+  $('tombolSetuju').disabled = true;
+  $('guru').value = '';
+  $('pin').value = '';
+  tampilkanLogin();
+  tampil('');
+}
+
+document.querySelectorAll('.btn-keluar').forEach((b) => b.addEventListener('click', keluar));
 
 muat();

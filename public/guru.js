@@ -1,14 +1,32 @@
-function bukaModalPin(nama, pin) {
-  $('judulPin').textContent = 'PIN untuk ' + nama;
-  $('isiPin').textContent = pin; // textContent, aman dari XSS
+let guruPinId = null;
+let guruPinNama = '';
+
+function pesanGuru(teks, sukses) {
+  $('pesanGuru').textContent = teks;
+  $('pesanGuru').className = sukses ? 'err ok' : 'err';
+}
+
+function bukaModalPin(id, nama) {
+  guruPinId = id;
+  guruPinNama = nama;
+  $('judulPin').textContent = 'Ubah PIN untuk ' + nama;
+  $('pinBaru').value = '';
+  $('pesanPin').textContent = '';
   $('modalPin').showModal();
+  $('pinBaru').focus();
+}
+
+function tutupModalPin() {
+  $('pinBaru').value = ''; // jangan biarkan PIN tertinggal di layar
+  $('modalPin').close();
+  guruPinId = null;
 }
 
 async function muatGuru() {
   const tbody = $('tabelGuru');
   const res = await api('/api/guru');
   if (!res.ok) {
-    $('pesanGuru').textContent = res.status === 403 ? 'Ganti password dulu.' : 'Gagal memuat daftar guru.';
+    pesanGuru(res.status === 403 ? 'Ganti password dulu.' : 'Gagal memuat daftar guru.', false);
     return;
   }
   const daftar = await res.json();
@@ -20,7 +38,7 @@ async function muatGuru() {
     .map(
       (g) =>
         '<tr><td>' + esc(g.nama) + '</td><td>' + (g.aktif ? 'Aktif' : 'Nonaktif') + '</td><td>' +
-        '<button class="btn kecil o" type="button" data-aksi="pin" data-id="' + esc(g.id) + '">Reset PIN</button>' +
+        '<button class="btn kecil o" type="button" data-aksi="pin" data-id="' + esc(g.id) + '">Ubah PIN</button>' +
         '<button class="btn kecil o" type="button" data-aksi="toggle" data-id="' + esc(g.id) +
         '" data-aktif="' + g.aktif + '">' + (g.aktif ? 'Nonaktifkan' : 'Aktifkan') + '</button>' +
         '</td></tr>'
@@ -30,22 +48,24 @@ async function muatGuru() {
 
 $('formGuru').addEventListener('submit', async (e) => {
   e.preventDefault();
-  $('pesanGuru').textContent = '';
+  pesanGuru('', false);
   const nama = $('namaGuru').value.trim();
+  const pin = $('pinGuru').value.trim();
   const res = await api('/api/guru', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ nama }),
+    body: JSON.stringify({ nama, pin }),
   });
   const data = await res.json().catch(() => ({}));
   if (res.status === 201) {
     $('namaGuru').value = '';
-    bukaModalPin(data.nama, data.pin);
+    $('pinGuru').value = '';
+    pesanGuru('Guru "' + data.nama + '" ditambahkan. Berikan PIN yang tadi Anda buat kepada guru tersebut.', true);
     muatGuru();
   } else if (res.status === 409) {
-    $('pesanGuru').textContent = 'Nama guru itu sudah ada. Tambahkan pembeda, misalnya inisial.';
+    pesanGuru('Nama guru itu sudah ada. Tambahkan pembeda, misalnya inisial.', false);
   } else {
-    $('pesanGuru').textContent = data.error || 'Gagal menambah guru.';
+    pesanGuru(data.error || 'Gagal menambah guru.', false);
   }
 });
 
@@ -54,14 +74,10 @@ $('tabelGuru').addEventListener('click', async (e) => {
   if (!tombol) return;
   const id = tombol.dataset.id;
   const nama = tombol.closest('tr').firstElementChild.textContent;
-  $('pesanGuru').textContent = '';
+  pesanGuru('', false);
 
   if (tombol.dataset.aksi === 'pin') {
-    if (!confirm('Reset PIN ' + nama + '? PIN lama langsung tidak berlaku.')) return;
-    const res = await api('/api/guru/' + id + '/reset-pin', { method: 'POST' });
-    const data = await res.json().catch(() => ({}));
-    if (res.ok) bukaModalPin(nama, data.pin);
-    else $('pesanGuru').textContent = data.error || 'Gagal reset PIN.';
+    bukaModalPin(id, nama);
   }
 
   if (tombol.dataset.aksi === 'toggle') {
@@ -72,14 +88,29 @@ $('tabelGuru').addEventListener('click', async (e) => {
       body: JSON.stringify({ aktif: aktifBaru }),
     });
     if (res.ok) muatGuru();
-    else $('pesanGuru').textContent = 'Gagal mengubah status guru.';
+    else pesanGuru('Gagal mengubah status guru.', false);
   }
 });
 
-$('tutupPin').addEventListener('click', () => {
-  $('isiPin').textContent = ''; // hapus PIN dari layar
-  $('modalPin').close();
+$('formPin').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('pesanPin').textContent = '';
+  const res = await api('/api/guru/' + encodeURIComponent(guruPinId) + '/pin', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pin: $('pinBaru').value.trim() }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (res.ok) {
+    const nama = guruPinNama;
+    tutupModalPin();
+    pesanGuru('PIN untuk ' + nama + ' sudah diganti. PIN yang lama langsung tidak berlaku.', true);
+  } else {
+    $('pesanPin').textContent = data.error || 'Gagal menyimpan PIN.';
+  }
 });
+
+$('batalPin').addEventListener('click', tutupModalPin);
 
 window.addEventListener('hashchange', () => {
   if (location.hash === '#guru') muatGuru();

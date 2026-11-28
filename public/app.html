@@ -95,8 +95,13 @@
           <label for="namaGuru">Nama guru baru</label>
           <input id="namaGuru" required minlength="2" maxlength="100">
         </div>
+        <div class="isi-pin">
+          <label for="pinGuru">PIN (6 angka)</label>
+          <input id="pinGuru" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off">
+        </div>
         <button class="btn" type="submit">Tambah guru</button>
       </form>
+      <p class="mu">PIN dibuat oleh admin. Yang tersimpan hanya hash-nya, jadi PIN tidak bisa dilihat lagi: catat di tempat yang aman dan berikan ke guru yang bersangkutan.</p>
       <div class="err" id="pesanGuru" role="alert"></div>
       <div class="tabel-scroll">
         <table>
@@ -106,10 +111,14 @@
       </div>
     </section>
     <dialog id="modalPin">
-      <h3 id="judulPin">PIN guru</h3>
-      <div class="pin" id="isiPin"></div>
-      <p class="mu">PIN hanya tampil sekali. Catat dan berikan ke guru sekarang.</p>
-      <button class="btn" id="tutupPin" type="button">Saya sudah mencatat</button>
+      <form id="formPin" autocomplete="off">
+        <h3 id="judulPin">Ubah PIN</h3>
+        <label for="pinBaru">PIN baru (6 angka)</label>
+        <input id="pinBaru" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off">
+        <div class="err" id="pesanPin" role="alert"></div>
+        <button class="btn" type="submit">Simpan PIN</button>
+        <button class="btn o" id="batalPin" type="button">Batal</button>
+      </form>
     </dialog>
     <section id="tab-rekap" hidden>
       <h2>Rekap</h2>

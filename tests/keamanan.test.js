@@ -39,7 +39,7 @@ describe('keamanan tambahan', () => {
   });
 
   test('sekolah_id palsu di body POST guru diabaikan', async () => {
-    const res = await agentA.post('/api/guru').send({ nama: 'Guru Baru', sekolah_id: idB });
+    const res = await agentA.post('/api/guru').send({ nama: 'Guru Baru', pin: '482916', sekolah_id: idB });
     expect(res.status).toBe(201);
 
     const cek = await query('SELECT sekolah_id FROM guru WHERE id = $1', [res.body.id]);

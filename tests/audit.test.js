@@ -130,19 +130,20 @@ describe('audit keamanan', () => {
     daftar.forEach(bersih);
   });
 
-  test('PIN hanya keluar sekali lewat pembuatan dan reset, tanpa hash', async () => {
-    const baru = await adminA.post('/api/guru').send({ nama: 'Guru Baru' });
+  test('PIN dibuat admin: respons tidak pernah memuat PIN atau hash', async () => {
+    const baru = await adminA.post('/api/guru').send({ nama: 'Guru Baru', pin: '482916' });
     expect(baru.status).toBe(201);
-    expect(Object.keys(baru.body).sort()).toEqual(['aktif', 'id', 'nama', 'pin']);
-    expect(baru.body.pin).toMatch(/^\d{6}$/);
+    expect(Object.keys(baru.body).sort()).toEqual(['aktif', 'id', 'nama']);
     bersih(baru);
+    expect(baru.text).not.toContain('482916');
 
-    const reset = await adminA.post(`/api/guru/${g.g4}/reset-pin`);
-    expect(Object.keys(reset.body)).toEqual(['pin']);
-    bersih(reset);
+    const ubah = await adminA.put(`/api/guru/${g.g4}/pin`).send({ pin: '739104' });
+    expect(ubah.status).toBe(200);
+    expect(ubah.body).toEqual({ ok: true });
+    bersih(ubah);
 
     const daftar = await adminA.get('/api/guru');
-    expect(daftar.text).not.toContain(baru.body.pin); // PIN tidak muncul lagi setelah itu
+    expect(daftar.text).not.toMatch(/482916|739104/);
   });
 
   test('respons API guru tidak membocorkan password, hash, atau PIN guru lain', async () => {

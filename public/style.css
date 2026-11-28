@@ -150,3 +150,7 @@ body.kunci{overflow:hidden}
 .thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--bd);background:var(--bg)}
 .thumb-kosong{width:64px;height:64px;border-radius:10px;border:1px dashed var(--bd);display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:11px;text-align:center;flex-shrink:0}
 .catatan{font-size:14px;margin-top:20px;max-width:640px}
+
+.baris{flex-wrap:wrap}
+.isi-pin{width:150px}
+.btn-keluar{margin-top:24px}

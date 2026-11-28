@@ -84,4 +84,14 @@ router.post('/s/:slug/login', limiterLoginGuru, async (req, res) => {
   res.json({ ok: true });
 });
 
+// keluar: hapus cookie sesi guru supaya perangkat bisa dipakai guru lain
+router.post('/s/:slug/logout', (req, res) => {
+  res.clearCookie('token_guru', {
+    httpOnly: true,
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.json({ ok: true });
+});
+
 module.exports = router;
