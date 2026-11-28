@@ -59,18 +59,29 @@
           <a class="btn kecil o" id="bukaLink" href="#" target="_blank" rel="noopener">Buka</a>
         </div>
       </div>
-      <p class="label">Hari ini</p>
+      <p class="label" id="labelHari">Hari ini</p>
+      <div class="alat navigasi-tanggal">
+        <button class="btn kecil o" id="hariSebelumnya" type="button" aria-label="Hari sebelumnya">&lsaquo;</button>
+        <div>
+          <label for="inputTanggal">Tanggal</label>
+          <input id="inputTanggal" type="date">
+        </div>
+        <button class="btn kecil o" id="hariBerikutnya" type="button" aria-label="Hari berikutnya">&rsaquo;</button>
+        <button class="btn kecil" id="hariIniBtn" type="button">Hari ini</button>
+      </div>
       <p class="mu" id="tanggalDash"></p>
+      <div class="err" id="pesanDash" role="alert"></div>
       <div class="kartu-grid" id="kartuRingkasan"></div>
       <h3>Sudah absen</h3>
       <div class="tabel-scroll">
-        <table>
-          <thead><tr><th>Nama</th><th>Status</th><th>Masuk</th><th>Pulang</th><th>Foto</th></tr></thead>
+        <table class="tabel-absen">
+          <thead><tr><th>Nama</th><th>Status</th><th>Absen masuk</th><th>Absen pulang</th></tr></thead>
           <tbody id="tabelHadir"></tbody>
         </table>
       </div>
-      <h3 class="jarak-atas">Belum absen</h3>
+      <h3 class="jarak-atas" id="judulBelum">Belum absen</h3>
       <p id="daftarBelum" class="mu"></p>
+      <p class="mu catatan" id="catatanDash"></p>
     </section>
     <dialog id="modalFoto">
       <h3 id="judulFoto">Selfie</h3>

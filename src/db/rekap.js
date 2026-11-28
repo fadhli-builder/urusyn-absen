@@ -1,13 +1,18 @@
 const { query } = require('./query');
 
-async function rekapHariIni(sekolahId, tanggal) {
+// Guru aktif ditambah guru nonaktif yang punya absen pada tanggal itu (riwayat tidak boleh hilang).
+async function rekapHarian(sekolahId, tanggal) {
   const hasil = await query(
-    `SELECT g.id AS guru_id, g.nama, a.id AS absensi_id, a.status, a.jam_masuk, a.jam_pulang,
-            (a.foto_path IS NOT NULL) AS ada_foto
+    `SELECT g.id AS guru_id, g.nama, g.aktif,
+            a.id AS absensi_id, a.status, a.jam_masuk, a.jam_pulang,
+            a.lat, a.lng, a.akurasi_m,
+            a.lat_pulang, a.lng_pulang, a.akurasi_pulang_m,
+            (a.foto_path IS NOT NULL) AS foto_masuk,
+            (a.foto_pulang_path IS NOT NULL) AS foto_pulang
      FROM guru g
      LEFT JOIN absensi a
        ON a.guru_id = g.id AND a.sekolah_id = g.sekolah_id AND a.tanggal = $2
-     WHERE g.sekolah_id = $1 AND g.aktif = true
+     WHERE g.sekolah_id = $1 AND (g.aktif = true OR a.id IS NOT NULL)
      ORDER BY g.nama`,
     [sekolahId, tanggal]
   );
@@ -43,4 +48,4 @@ async function absensiBulan(sekolahId, awalBulan) {
   return hasil.rows;
 }
 
-module.exports = { rekapHariIni, guruUntukBulan, absensiBulan };
+module.exports = { rekapHarian, guruUntukBulan, absensiBulan };

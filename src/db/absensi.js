@@ -8,9 +8,10 @@ async function sudahAbsenHariIni(sekolahId, guruId, tanggal) {
   return hasil.rowCount > 0;
 }
 
+// foto yang sama tidak boleh dipakai ulang, baik sebagai foto masuk maupun foto pulang
 async function fotoSudahAda(sekolahId, fotoHash) {
   const hasil = await query(
-    'SELECT 1 FROM absensi WHERE sekolah_id = $1 AND foto_hash = $2 LIMIT 1',
+    'SELECT 1 FROM absensi WHERE sekolah_id = $1 AND (foto_hash = $2 OR foto_pulang_hash = $2) LIMIT 1',
     [sekolahId, fotoHash]
   );
   return hasil.rowCount > 0;

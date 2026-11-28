@@ -136,3 +136,17 @@ body.kunci{overflow:hidden}
   .alat > div{flex:1 1 100%}
   .alat .btn{flex:1 1 40%}
 }
+
+.navigasi-tanggal{align-items:flex-end}
+.navigasi-tanggal label{margin:0 0 4px}
+.navigasi-tanggal input[type=date]{width:auto}
+.navigasi-tanggal .btn:disabled{opacity:.45;cursor:default}
+.tabel-absen td{vertical-align:top}
+.sel-absen{display:flex;gap:10px;align-items:flex-start;min-width:190px}
+.sel-absen b{display:block;font-size:17px}
+.kecil-info{display:block;font-size:13px;color:var(--mu);line-height:1.4}
+.kecil-info a{color:var(--ac)}
+.thumb-btn{padding:0;border:0;background:none;cursor:zoom-in;flex-shrink:0;line-height:0}
+.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;border:1px solid var(--bd);background:var(--bg)}
+.thumb-kosong{width:64px;height:64px;border-radius:10px;border:1px dashed var(--bd);display:flex;align-items:center;justify-content:center;color:var(--mu);font-size:11px;text-align:center;flex-shrink:0}
+.catatan{font-size:14px;margin-top:20px;max-width:640px}

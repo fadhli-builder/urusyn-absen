@@ -63,7 +63,7 @@ describe('audit keamanan', () => {
     await query("UPDATE sekolah SET berlaku_sampai = '2020-01-01' WHERE id = $1", [idA]);
     try {
       expect((await ag.g4.post('/api/absen/masuk').send(TITIK)).status).toBe(403);
-      expect((await ag.g4.post('/api/absen/pulang')).status).toBe(403);
+      expect((await ag.g4.post('/api/absen/pulang').send(TITIK)).status).toBe(403);
     } finally {
       await query('UPDATE sekolah SET berlaku_sampai = NULL WHERE id = $1', [idA]);
     }

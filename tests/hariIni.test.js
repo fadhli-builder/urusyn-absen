@@ -73,7 +73,7 @@ describe('status hari ini dan profil guru', () => {
   });
 
   test('setelah pulang: pulang terisi', async () => {
-    expect((await ag1.post('/api/absen/pulang')).status).toBe(200);
+    expect((await ag1.post('/api/absen/pulang').send(TITIK)).status).toBe(200);
     const res = await ag1.get('/api/absen/hari-ini');
     expect(res.body.pulang).not.toBeNull();
   });

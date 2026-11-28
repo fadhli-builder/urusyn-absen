@@ -89,6 +89,15 @@ async function perkecil(file) {
   return blob;
 }
 
+// keadaan absen hari ini dari server, dipakai untuk mengatur tombol
+let keadaan = { masuk: false, pulang: false };
+
+function aturTombol() {
+  const butuhFoto = selfieWajib && !fotoBlob;
+  $('btnMasuk').disabled = keadaan.masuk || butuhFoto;
+  $('btnPulang').disabled = !keadaan.masuk || keadaan.pulang || butuhFoto;
+}
+
 async function tampilAbsen() {
   $('setuju').hidden = true;
   const res = await fetch('/api/absen/hari-ini');
@@ -109,19 +118,23 @@ async function tampilAbsen() {
   $('statusPulang').textContent = d.pulang ? fmtJam(d.pulang.jam) + ' WIB' : 'Belum absen';
 
   selfieWajib = d.selfieAktif;
-  const perluFoto = d.selfieAktif && !d.masuk;
+  keadaan = { masuk: Boolean(d.masuk), pulang: Boolean(d.pulang) };
+
+  // selfie dibutuhkan untuk absen masuk DAN absen pulang
+  const perluFoto = d.selfieAktif && !d.pulang;
   $('blokSelfie').hidden = !perluFoto;
   $('infoSelfie').hidden = !perluFoto;
+  $('infoSelfie').textContent =
+    'Sekolah ini mewajibkan selfie. Ambil foto dulu sebelum absen ' + (d.masuk ? 'pulang' : 'masuk') + '.';
   if (!perluFoto) resetFoto();
 
-  $('btnMasuk').disabled = Boolean(d.masuk) || (d.selfieAktif && !fotoBlob);
-  $('btnPulang').disabled = !d.masuk || Boolean(d.pulang);
+  aturTombol();
 }
 
 async function kirimAbsen(jenis) {
   if (sibuk) return;
-  if (jenis === 'masuk' && selfieWajib && !fotoBlob) {
-    pesanAbsen('Ambil selfie dulu sebelum absen masuk.', false);
+  if (selfieWajib && !fotoBlob) {
+    pesanAbsen('Ambil selfie dulu sebelum absen ' + jenis + '.', false);
     return;
   }
   sibuk = true;
@@ -132,23 +145,23 @@ async function kirimAbsen(jenis) {
   $('btnPulang').disabled = true;
 
   try {
-    let body = null;
+    // absen masuk dan pulang memakai aturan yang sama: lokasi GPS, plus selfie kalau diwajibkan
+    tombol.textContent = 'Mencari lokasi...';
+    const lok = await ambilLokasi();
+    let body;
     let headers = {};
-    if (jenis === 'masuk') {
-      tombol.textContent = 'Mencari lokasi...';
-      const lok = await ambilLokasi();
-      if (selfieWajib) {
-        const f = new FormData();
-        f.append('lat', lok.lat);
-        f.append('lng', lok.lng);
-        f.append('akurasi', lok.akurasi);
-        f.append('foto', fotoBlob, 'selfie.jpg');
-        body = f; // Content-Type diatur browser (multipart)
-      } else {
-        body = JSON.stringify(lok);
-        headers = { 'Content-Type': 'application/json' };
-      }
+    if (selfieWajib) {
+      const f = new FormData();
+      f.append('lat', lok.lat);
+      f.append('lng', lok.lng);
+      f.append('akurasi', lok.akurasi);
+      f.append('foto', fotoBlob, 'selfie.jpg');
+      body = f; // Content-Type diatur browser (multipart)
+    } else {
+      body = JSON.stringify(lok);
+      headers = { 'Content-Type': 'application/json' };
     }
+
     tombol.textContent = 'Mengirim...';
     const res = await fetch('/api/absen/' + jenis, { method: 'POST', headers, body });
     const data = await res.json().catch(() => ({}));
@@ -158,12 +171,12 @@ async function kirimAbsen(jenis) {
       return;
     }
     if (res.ok) {
-      resetFoto();
+      resetFoto(); // untuk absen berikutnya wajib selfie baru
       pesanAbsen(
         jenis === 'masuk'
           ? 'Absen masuk berhasil. Status: ' + (data.status === 'telat' ? 'Telat' : 'Hadir') +
               '. Jarak dari titik sekolah sekitar ' + data.jarak_m + ' m.'
-          : 'Absen pulang berhasil. Hati-hati di jalan.',
+          : 'Absen pulang berhasil. Jarak dari titik sekolah sekitar ' + data.jarak_m + ' m. Hati-hati di jalan.',
         true
       );
     } else {
@@ -320,7 +333,7 @@ $('inputSelfie').addEventListener('change', async (e) => {
     resetFoto();
     $('infoFoto').textContent = 'File yang dipilih bukan foto. Coba lagi.';
   }
-  $('btnMasuk').disabled = !fotoBlob;
+  aturTombol();
 });
 
 $('btnMasuk').addEventListener('click', () => kirimAbsen('masuk'));

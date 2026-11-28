@@ -9,12 +9,24 @@ async function ambilAbsenHariIni(sekolahId, guruId, tanggal) {
 }
 
 // "jam_pulang IS NULL" di WHERE membuat pulang hanya bisa sekali, bahkan kalau dua permintaan datang bersamaan
-async function catatAbsenPulang(sekolahId, guruId, tanggal, waktu) {
+async function catatAbsenPulang(sekolahId, guruId, tanggal, d) {
   const hasil = await query(
-    `UPDATE absensi SET jam_pulang = $4
+    `UPDATE absensi
+     SET jam_pulang = $4, lat_pulang = $5, lng_pulang = $6, akurasi_pulang_m = $7,
+         foto_pulang_path = $8, foto_pulang_hash = $9
      WHERE sekolah_id = $1 AND guru_id = $2 AND tanggal = $3 AND jam_pulang IS NULL
      RETURNING id, tanggal, jam_masuk, jam_pulang`,
-    [sekolahId, guruId, tanggal, waktu]
+    [
+      sekolahId,
+      guruId,
+      tanggal,
+      d.waktu,
+      d.lat,
+      d.lng,
+      d.akurasi,
+      d.fotoPath ?? null,
+      d.fotoHash ?? null,
+    ]
   );
   return hasil.rows[0] || null;
 }
